@@ -1,0 +1,864 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Nebula AI — Ultimate Intelligence</title>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Exo+2:wght@300;400;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#000008;--text:#dde8ff;--muted:#5566aa;
+  --ai-bubble:rgba(0,8,35,0.9);--user-bubble:rgba(100,40,220,0.18);
+  --mc:#7b2fff;--mc2:#ff6ef7;--mglow:rgba(123,47,255,0.28);
+}
+body.mode-coding{--mc:#00ff88;--mc2:#00cfff;--mglow:rgba(0,255,136,0.22)}
+body.mode-study{--mc:#7b2fff;--mc2:#ff6ef7;--mglow:rgba(123,47,255,0.28)}
+body.mode-browsing{--mc:#00cfff;--mc2:#e0f0ff;--mglow:rgba(0,207,255,0.28)}
+body.mode-research{--mc:#ff9500;--mc2:#ffdd00;--mglow:rgba(255,149,0,0.28)}
+
+html,body{height:100%;background:var(--bg);font-family:'Exo 2',sans-serif;color:var(--text);overflow:hidden}
+#space-canvas{position:fixed;inset:0;z-index:0;pointer-events:none}
+.nl{position:fixed;border-radius:50%;pointer-events:none;z-index:0;transition:background 1.5s ease, opacity 1.5s ease}
+.n1{
+  width:800px;height:550px;top:-160px;left:-200px;
+  background:radial-gradient(ellipse at 40% 40%, var(--mglow) 0%, rgba(0,0,0,0) 68%);
+  animation:nd1 26s cubic-bezier(0.45,0.05,0.55,0.95) infinite alternate;
+  filter:blur(72px);
+}
+.n2{
+  width:680px;height:680px;bottom:-180px;right:-180px;
+  background:radial-gradient(ellipse at 60% 60%, rgba(0,160,255,0.11) 0%, rgba(0,0,0,0) 68%);
+  animation:nd2 34s cubic-bezier(0.45,0.05,0.55,0.95) infinite alternate-reverse;
+  filter:blur(80px);
+}
+.n3{
+  width:500px;height:380px;top:38%;left:38%;
+  background:radial-gradient(ellipse at 50% 50%, rgba(200,60,255,0.07) 0%, rgba(0,0,0,0) 68%);
+  animation:nd3 22s cubic-bezier(0.45,0.05,0.55,0.95) infinite alternate;
+  filter:blur(60px);
+}
+.n4{
+  width:420px;height:300px;top:10%;right:12%;
+  background:radial-gradient(ellipse at 50% 50%, rgba(0,255,200,0.05) 0%, rgba(0,0,0,0) 68%);
+  animation:nd2 30s cubic-bezier(0.45,0.05,0.55,0.95) infinite alternate;
+  filter:blur(70px);
+}
+@keyframes nd1{
+  0%{transform:translate(0px,0px) scale(1) rotate(0deg)}
+  33%{transform:translate(22px,14px) scale(1.06) rotate(1deg)}
+  66%{transform:translate(8px,28px) scale(0.96) rotate(-1deg)}
+  100%{transform:translate(32px,10px) scale(1.1) rotate(0.5deg)}
+}
+@keyframes nd2{
+  0%{transform:translate(0px,0px) scale(1) rotate(0deg)}
+  40%{transform:translate(-18px,20px) scale(1.08) rotate(-1deg)}
+  100%{transform:translate(16px,-24px) scale(0.94) rotate(1deg)}
+}
+@keyframes nd3{
+  0%{transform:translate(0px,0px) scale(1)}
+  50%{transform:translate(14px,-10px) scale(1.12)}
+  100%{transform:translate(-10px,18px) scale(0.92)}
+}
+
+/* ── APP LAYOUT ── */
+#app{position:relative;z-index:10;display:flex;flex-direction:column;height:100vh}
+#modeBar{height:2px;background:linear-gradient(90deg,var(--mc),var(--mc2));box-shadow:0 0 10px var(--mglow);flex-shrink:0;transition:background 0.8s}
+
+/* ── HEADER ── */
+header{padding:9px 16px;display:flex;align-items:center;gap:11px;background:rgba(0,0,12,0.82);border-bottom:1px solid rgba(123,47,255,0.18);backdrop-filter:blur(22px);flex-shrink:0}
+.lw{position:relative;width:40px;height:40px;flex-shrink:0}
+.lr{position:absolute;inset:0;border-radius:50%;border:1.5px solid transparent;background:linear-gradient(135deg,var(--mc),var(--mc2)) border-box;-webkit-mask:linear-gradient(#fff 0 0) padding-box,linear-gradient(#fff 0 0);-webkit-mask-composite:destination-out;mask-composite:exclude;animation:spin 7s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.lc{position:absolute;inset:5px;border-radius:50%;background:radial-gradient(circle at 35% 35%,#3a1a8a,#00001a);display:flex;align-items:center;justify-content:center;font-size:15px;box-shadow:0 0 16px var(--mglow)}
+.ht h1{font-family:'Orbitron',monospace;font-size:1.05rem;font-weight:900;letter-spacing:3px;background:linear-gradient(90deg,var(--mc),var(--mc2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-size:200%;animation:sh 4s linear infinite}
+@keyframes sh{0%{background-position:0%}100%{background-position:200%}}
+.ht p{font-size:0.6rem;color:var(--muted);letter-spacing:1.5px;text-transform:uppercase;font-weight:300}
+.hr{margin-left:auto;display:flex;align-items:center;gap:9px}
+#modeBtn{display:flex;align-items:center;gap:6px;padding:6px 13px;background:rgba(0,0,22,0.75);border:1px solid var(--mc);border-radius:20px;color:var(--mc);font-family:'Exo 2',sans-serif;font-size:0.7rem;font-weight:600;letter-spacing:1px;cursor:pointer;transition:all 0.3s;box-shadow:0 0 10px var(--mglow);text-transform:uppercase}
+#modeBtn:hover{background:rgba(100,40,220,0.18);transform:translateY(-1px);box-shadow:0 0 20px var(--mglow)}
+.st{display:flex;align-items:center;gap:6px;font-size:0.63rem;color:var(--muted);letter-spacing:1px}
+.sd{width:7px;height:7px;background:#22ff88;border-radius:50%;box-shadow:0 0 8px #22ff88;animation:pl 2s infinite}
+@keyframes pl{0%,100%{opacity:1;transform:scale(1)}50%{opacity:0.5;transform:scale(0.8)}}
+
+/* ── MAIN BODY — CHAT + PREVIEW SPLIT ── */
+#mainBody{flex:1;display:flex;overflow:hidden;min-height:0}
+
+/* ── CHAT PANEL ── */
+#chatPanel{flex:1;display:flex;flex-direction:column;min-width:0;transition:flex 0.4s ease}
+#chat{flex:1;overflow-y:auto;padding:18px 13px 12px;scroll-behavior:smooth}
+#chat::-webkit-scrollbar{width:3px}
+#chat::-webkit-scrollbar-thumb{background:rgba(123,47,255,0.3);border-radius:3px}
+
+.message{display:flex;gap:11px;margin-bottom:16px;animation:mi 0.28s cubic-bezier(0.34,1.56,0.64,1);max-width:860px;margin-left:auto;margin-right:auto}
+@keyframes mi{from{opacity:0;transform:translateY(12px) scale(0.97)}to{opacity:1;transform:translateY(0) scale(1)}}
+.message.user{flex-direction:row-reverse}
+.av{width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;flex-shrink:0;margin-top:3px}
+.av.ai{background:radial-gradient(circle at 35% 35%,#3a1a8a,#00001a);border:1px solid var(--mc);box-shadow:0 0 9px var(--mglow)}
+.av.usr{background:radial-gradient(circle at 35% 35%,#001535,#000010);border:1px solid rgba(0,200,255,0.38);box-shadow:0 0 9px rgba(0,200,255,0.18)}
+.bubble{max-width:78%;padding:11px 15px;border-radius:17px;line-height:1.78;font-size:0.86rem;font-weight:300;position:relative;backdrop-filter:blur(10px)}
+.message.ai .bubble{background:var(--ai-bubble);border:1px solid rgba(123,47,255,0.16);border-bottom-left-radius:4px;box-shadow:0 4px 18px rgba(0,0,0,0.42),inset 0 1px 0 rgba(255,255,255,0.035)}
+.message.user .bubble{background:var(--user-bubble);border:1px solid rgba(0,200,255,0.18);border-bottom-right-radius:4px}
+.bubble strong{color:var(--mc);font-weight:600}
+.bubble em{color:#ff6ef7;font-style:normal;font-weight:600}
+
+/* ── CODE BLOCK ── */
+.code-wrap{position:relative;margin:10px 0}
+.code-lang{position:absolute;top:0;right:0;background:rgba(0,255,136,0.12);border:1px solid rgba(0,255,136,0.2);border-radius:0 8px 0 6px;padding:2px 9px;font-family:'JetBrains Mono',monospace;font-size:0.65rem;color:#00ff88;letter-spacing:1px;text-transform:uppercase;z-index:2}
+.copy-btn{position:absolute;top:26px;right:0;background:rgba(0,255,136,0.1);border:1px solid rgba(0,255,136,0.25);border-radius:0 0 0 6px;padding:3px 9px;font-size:0.65rem;color:#00ff88;cursor:pointer;transition:all 0.2s;z-index:2;font-family:'Exo 2',sans-serif}
+.copy-btn:hover{background:rgba(0,255,136,0.22)}
+.bubble pre{background:rgba(0,0,0,0.7);border:1px solid rgba(0,255,136,0.18);border-left:3px solid #00ff88;border-radius:9px;padding:32px 13px 13px;font-family:'JetBrains Mono',monospace;font-size:0.78rem;color:#b8ffd0;overflow-x:auto;white-space:pre;line-height:1.6}
+.bubble code{font-family:'JetBrains Mono',monospace;background:rgba(0,255,136,0.07);border:1px solid rgba(0,255,136,0.14);border-radius:4px;padding:1px 5px;font-size:0.79rem;color:#00ff88}
+.bubble pre code{background:none;border:none;padding:0;color:inherit}
+.chat-link{display:inline-block;margin:4px 4px 0 0;padding:5px 11px;background:rgba(0,200,255,0.08);border:1px solid rgba(0,200,255,0.32);border-radius:18px;color:#00cfff;font-size:0.76rem;text-decoration:none;transition:all 0.2s}
+.chat-link:hover{background:rgba(0,200,255,0.2);box-shadow:0 0 11px rgba(0,200,255,0.28);color:#fff;transform:translateY(-1px)}
+
+/* ── PREVIEW PANEL ── */
+#previewPanel{width:0;flex-shrink:0;overflow:hidden;transition:width 0.4s ease;background:rgba(0,5,20,0.95);border-left:1px solid rgba(0,255,136,0.15);display:flex;flex-direction:column}
+#previewPanel.open{width:50%}
+#previewHeader{padding:8px 14px;display:flex;align-items:center;justify-content:space-between;background:rgba(0,10,30,0.9);border-bottom:1px solid rgba(0,255,136,0.12);flex-shrink:0}
+#previewHeader span{font-family:'Orbitron',monospace;font-size:0.65rem;letter-spacing:2px;color:#00ff88;text-transform:uppercase}
+.prev-tabs{display:flex;gap:2px}
+.prev-tab{padding:4px 11px;background:rgba(0,255,136,0.07);border:1px solid rgba(0,255,136,0.18);border-radius:6px;color:#00ff88;font-size:0.67rem;cursor:pointer;transition:all 0.2s;font-family:'Exo 2',sans-serif;letter-spacing:0.5px}
+.prev-tab.active{background:rgba(0,255,136,0.18);border-color:rgba(0,255,136,0.5);box-shadow:0 0 8px rgba(0,255,136,0.2)}
+#closePreview{background:none;border:1px solid rgba(255,100,100,0.3);border-radius:6px;color:rgba(255,120,120,0.7);font-size:0.68rem;padding:3px 9px;cursor:pointer;transition:all 0.2s;font-family:'Exo 2',sans-serif}
+#closePreview:hover{background:rgba(255,80,80,0.12);color:#ff8888}
+#previewFrame{flex:1;border:none;background:#fff;min-height:0}
+#previewPlaceholder{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;color:rgba(0,255,136,0.4)}
+#previewPlaceholder .pi{font-size:42px;opacity:0.5}
+#previewPlaceholder p{font-size:0.75rem;letter-spacing:1px;text-transform:uppercase}
+
+/* ── QUICK TOPICS ── */
+.qt{display:flex;flex-wrap:wrap;gap:6px;margin-top:11px}
+.qb{padding:5px 12px;background:rgba(123,47,255,0.1);border:1px solid rgba(123,47,255,0.28);border-radius:17px;color:rgba(175,155,255,0.9);font-size:0.72rem;cursor:pointer;transition:all 0.2s;font-family:'Exo 2',sans-serif}
+.qb:hover{background:rgba(123,47,255,0.22);border-color:var(--mc);color:#fff;box-shadow:0 0 9px var(--mglow);transform:translateY(-1px)}
+
+/* ── TYPING ── */
+.ti{display:none;gap:11px;margin-bottom:16px;max-width:860px;margin-left:auto;margin-right:auto}
+.ti.show{display:flex}
+.td{background:var(--ai-bubble);border:1px solid rgba(123,47,255,0.18);border-radius:17px;border-bottom-left-radius:4px;padding:11px 17px;display:flex;gap:5px;align-items:center;backdrop-filter:blur(10px)}
+.dot{width:6px;height:6px;background:var(--mc);border-radius:50%;animation:df 1.4s ease-in-out infinite;box-shadow:0 0 5px var(--mc)}
+.dot:nth-child(2){animation-delay:.2s;background:var(--mc2);box-shadow:0 0 5px var(--mc2)}
+.dot:nth-child(3){animation-delay:.4s}
+@keyframes df{0%,80%,100%{transform:translateY(0);opacity:0.5}40%{transform:translateY(-6px);opacity:1}}
+
+/* ── INPUT ── */
+.ia{background:rgba(0,0,12,0.9);border-top:1px solid rgba(123,47,255,0.14);padding:10px 13px 13px;backdrop-filter:blur(22px);flex-shrink:0}
+.ir{display:flex;gap:9px;align-items:flex-end;max-width:860px;margin:0 auto}
+#ui{flex:1;background:rgba(6,4,26,0.92);border:1px solid rgba(123,47,255,0.22);border-radius:13px;padding:11px 15px;color:var(--text);font-family:'Exo 2',sans-serif;font-size:0.86rem;font-weight:300;resize:none;outline:none;transition:border-color 0.25s,box-shadow 0.25s;min-height:46px;max-height:120px}
+body.mode-coding #ui{font-family:'JetBrains Mono',monospace;font-size:0.8rem}
+#ui:focus{border-color:var(--mc);box-shadow:0 0 14px var(--mglow)}
+#ui::placeholder{color:var(--muted)}
+#sb{width:46px;height:46px;border-radius:13px;background:linear-gradient(135deg,var(--mc),var(--mc2));border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all 0.28s;flex-shrink:0;box-shadow:0 4px 16px var(--mglow)}
+#sb:hover{transform:scale(1.07);box-shadow:0 6px 24px var(--mglow)}
+#sb:active{transform:scale(0.94)}
+.ht2{text-align:center;font-size:0.6rem;color:rgba(80,95,150,0.5);margin-top:6px;letter-spacing:1px;text-transform:uppercase}
+
+/* ── MODE OVERLAY ── */
+#mo{display:none;position:fixed;inset:0;z-index:100;background:rgba(0,0,12,0.88);backdrop-filter:blur(20px);align-items:center;justify-content:center}
+#mo.open{display:flex;animation:fi 0.18s ease}
+@keyframes fi{from{opacity:0}to{opacity:1}}
+.mp{background:rgba(3,3,20,0.97);border:1px solid rgba(123,47,255,0.28);border-radius:22px;padding:28px;max-width:500px;width:92%;box-shadow:0 24px 80px rgba(0,0,0,0.88),0 0 36px rgba(123,47,255,0.1)}
+.mpt{font-family:'Orbitron',monospace;font-size:0.8rem;letter-spacing:3px;color:var(--muted);text-align:center;margin-bottom:18px;text-transform:uppercase}
+.mg{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.mc-card{padding:17px 14px;border-radius:15px;border:1px solid rgba(255,255,255,0.06);cursor:pointer;transition:all 0.22s;background:rgba(255,255,255,0.02);position:relative;overflow:hidden}
+.mc-card:hover{transform:translateY(-2px)}
+.mc-card[data-m="coding"]:hover,.mc-card[data-m="coding"].act{border-color:rgba(0,255,136,0.48);box-shadow:0 0 18px rgba(0,255,136,0.18);background:rgba(0,255,136,0.055)}
+.mc-card[data-m="study"]:hover,.mc-card[data-m="study"].act{border-color:rgba(123,47,255,0.48);box-shadow:0 0 18px rgba(123,47,255,0.18);background:rgba(123,47,255,0.055)}
+.mc-card[data-m="browsing"]:hover,.mc-card[data-m="browsing"].act{border-color:rgba(0,207,255,0.48);box-shadow:0 0 18px rgba(0,207,255,0.18);background:rgba(0,207,255,0.055)}
+.mc-card[data-m="research"]:hover,.mc-card[data-m="research"].act{border-color:rgba(255,149,0,0.48);box-shadow:0 0 18px rgba(255,149,0,0.18);background:rgba(255,149,0,0.055)}
+.mc-icon{font-size:25px;margin-bottom:7px;display:block}
+.mc-name{font-family:'Orbitron',monospace;font-size:0.7rem;font-weight:700;letter-spacing:2px;text-transform:uppercase;display:block;margin-bottom:4px}
+.mc-card[data-m="coding"] .mc-name{color:#00ff88}
+.mc-card[data-m="study"] .mc-name{color:#a070ff}
+.mc-card[data-m="browsing"] .mc-name{color:#00cfff}
+.mc-card[data-m="research"] .mc-name{color:#ff9500}
+.mc-desc{font-size:0.67rem;color:var(--muted);line-height:1.5}
+.adot{position:absolute;top:9px;right:9px;width:7px;height:7px;border-radius:50%;display:none}
+.mc-card.act .adot{display:block}
+.mc-card[data-m="coding"].act .adot{background:#00ff88;box-shadow:0 0 5px #00ff88}
+.mc-card[data-m="study"].act .adot{background:#7b2fff;box-shadow:0 0 5px #7b2fff}
+.mc-card[data-m="browsing"].act .adot{background:#00cfff;box-shadow:0 0 5px #00cfff}
+.mc-card[data-m="research"].act .adot{background:#ff9500;box-shadow:0 0 5px #ff9500}
+.mcl{margin-top:14px;width:100%;padding:9px;border-radius:11px;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);color:var(--muted);font-family:'Exo 2',sans-serif;font-size:0.76rem;cursor:pointer;transition:all 0.2s;letter-spacing:1px}
+.mcl:hover{background:rgba(255,255,255,0.08);color:var(--text)}
+
+/* ── CURSOR — smooth fade, not harsh blink ── */
+.cursor{
+  display:inline-block;
+  width:2px;height:1.1em;
+  background:var(--mc);
+  animation:cursorPulse 1.1s ease-in-out infinite;
+  vertical-align:text-bottom;
+  border-radius:2px;
+  margin-left:2px;
+  will-change:opacity;
+}
+@keyframes cursorPulse{
+  0%,100%{opacity:1;transform:scaleY(1)}
+  50%{opacity:0.15;transform:scaleY(0.85)}
+}
+
+/* TABLE */
+.bubble table{width:100%;border-collapse:collapse;margin:10px 0;font-size:0.8rem}
+.bubble th{background:rgba(123,47,255,0.13);padding:6px 10px;text-align:left;border:1px solid rgba(123,47,255,0.18);color:var(--mc);font-weight:600}
+.bubble td{padding:6px 10px;border:1px solid rgba(123,47,255,0.09)}
+.bubble tr:nth-child(even) td{background:rgba(255,255,255,0.018)}
+</style>
+</head>
+<body class="mode-study">
+
+<canvas id="space-canvas"></canvas>
+<div class="nl n1"></div><div class="nl n2"></div><div class="nl n3"></div><div class="nl n4"></div>
+
+<div id="app">
+  <div id="modeBar"></div>
+
+  <header>
+    <div class="lw"><div class="lr"></div><div class="lc">✦</div></div>
+    <div class="ht">
+      <h1>NEBULA</h1>
+      <p id="ml">Study Mode — Science &amp; Math Intelligence</p>
+    </div>
+    <div class="hr">
+      <button id="modeBtn" onclick="openMP()"><span id="mbi">📚</span><span id="mbt">STUDY</span></button>
+      <div class="st"><div class="sd"></div>ONLINE</div>
+    </div>
+  </header>
+
+  <div id="mainBody">
+    <!-- CHAT PANEL -->
+    <div id="chatPanel">
+      <div id="chat"></div>
+      <div class="ti" id="typing">
+        <div class="av ai">✦</div>
+        <div class="td"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>
+      </div>
+      <div class="ia">
+        <div class="ir">
+          <textarea id="ui" placeholder="Ask anything..." rows="1"></textarea>
+          <button id="sb" onclick="sendMessage()">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+            </svg>
+          </button>
+        </div>
+        <p class="ht2">Enter to Send &nbsp;·&nbsp; Shift + Enter for New Line</p>
+      </div>
+    </div>
+
+    <!-- PREVIEW PANEL -->
+    <div id="previewPanel">
+      <div id="previewHeader">
+        <span>⚡ Live Preview</span>
+        <div class="prev-tabs">
+          <button class="prev-tab active" onclick="setPreviewTab('preview')">Preview</button>
+          <button class="prev-tab" onclick="setPreviewTab('html')">HTML</button>
+        </div>
+        <button id="closePreview" onclick="closePreview()">✕ Close</button>
+      </div>
+      <iframe id="previewFrame" sandbox="allow-scripts allow-same-origin allow-forms allow-modals"></iframe>
+      <div id="previewPlaceholder" style="display:none">
+        <div class="pi">🖥️</div>
+        <p>Preview will appear here</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- MODE PANEL -->
+<div id="mo" onclick="closeMPOutside(event)">
+  <div class="mp">
+    <div class="mpt">⚡ Select a Mode</div>
+    <div class="mg">
+      <div class="mc-card" data-m="coding" onclick="setMode('coding')"><div class="adot"></div><span class="mc-icon">💻</span><span class="mc-name">Coding</span><span class="mc-desc">Code, debug, live preview, games, websites, 3D — extreme level</span></div>
+      <div class="mc-card act" data-m="study" onclick="setMode('study')"><div class="adot"></div><span class="mc-icon">📚</span><span class="mc-name">Study</span><span class="mc-desc">Physics, Math, Chemistry, Biology — deep step-by-step explanations</span></div>
+      <div class="mc-card" data-m="browsing" onclick="setMode('browsing')"><div class="adot"></div><span class="mc-icon">🌐</span><span class="mc-name">Browsing</span><span class="mc-desc">Open YouTube, websites, links — complete web navigator</span></div>
+      <div class="mc-card" data-m="research" onclick="setMode('research')"><div class="adot"></div><span class="mc-icon">🔬</span><span class="mc-name">Research</span><span class="mc-desc">Deep analysis, reports, fact-checking — professional researcher</span></div>
+    </div>
+    <button class="mcl" onclick="closeMP()">✕ &nbsp;Dismiss</button>
+  </div>
+</div>
+
+<script>
+const API_KEY = "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";
+let currentMode = 'study';
+let history = [];
+let isStreaming = false;
+let lastCode = '';
+let previewTab = 'preview';
+
+// ── MODES ──
+const MODES = {
+  coding:{
+    icon:'💻',label:'CODING',header:'Coding Mode — Live Preview & Full-Stack Dev',
+    ph:'Describe what you want to build — code, games, websites, 3D scenes...',
+    welcome:`💻 **Coding Mode — Live Preview Activated!** 🚀\n\nWhat I can build for you:\n- **Websites** — HTML/CSS/JS, animations, landing pages, dashboards\n- **2D Games** — Snake, Tetris, platformers, puzzle games (Canvas API)\n- **3D Scenes** — Three.js rotating objects, solar system, 3D games\n- **Algorithms** — DSA, sorting, searching with full explanation\n- **AI Apps** — Chatbots, calculators, interactive tools\n- **Any Language** — Python, C++, Java, SQL, React and more\n\nJust describe what you want — a **live preview** will appear instantly on the right! ⚡`,
+    btns:[
+      {l:'🐍 Python Sort',m:'Build a merge sort algorithm in Python with full explanation'},
+      {l:'🎮 2D Snake Game',m:'Build a complete working Snake game in JavaScript Canvas'},
+      {l:'🌐 Portfolio Page',m:'Build a beautiful dark theme portfolio webpage in HTML CSS JS'},
+      {l:'🎯 3D Solar System',m:'Build a 3D rotating solar system with Three.js — Earth Moon Sun'},
+      {l:'🧮 Calculator',m:'Build an advanced scientific calculator in HTML CSS JS'},
+      {l:'🤖 Chatbot UI',m:'Build a futuristic AI chatbot UI in HTML CSS JS'},
+    ],
+    systemPrompt:`You are "Nebula" — the world's most capable coding AI, delivering extreme-level production-ready code at Claude/GPT-4 quality or better. Match the language the user writes in.
+
+ABSOLUTE RULES — NEVER VIOLATE:
+1. ALWAYS provide 100% complete, working, runnable code — not a single line missing
+2. For any frontend/game/website: deliver everything in a SINGLE self-contained HTML file — CSS and JS embedded
+3. For 2D games → use Canvas API, implement full game logic completely
+4. For 3D scenes → use Three.js CDN (https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js)
+5. Every code block MUST include a proper language tag — \`\`\`html, \`\`\`python, \`\`\`javascript, etc.
+6. ZERO placeholder comments like "// add logic here" — implement everything fully
+7. Responsive design always — works perfectly on both mobile and desktop
+8. Beautiful, production-grade UI — prefer dark themes unless the user requests otherwise
+
+CODING EXPERTISE:
+Languages: Python, JavaScript, TypeScript, C++, Java, C#, Go, SQL, HTML5/CSS3, PHP, Rust
+Frameworks: React, Next.js, Vue, Node.js, Express, Django, FastAPI, Flask, Spring Boot
+Games: Canvas 2D (Phaser.js or vanilla JS), Three.js 3D, WebGL basics
+DSA: Arrays, LinkedList, Trees, Graphs, DP, all Sorting & Searching algorithms — always include Big-O analysis
+Web APIs: Canvas, WebGL, WebSockets, Fetch, LocalStorage, Web Audio API
+CSS: Flexbox, Grid, Animations, Glassmorphism, Neumorphism, Custom Properties
+
+CODE QUALITY STANDARDS:
+- Clean, readable, well-commented code with inline comments on key logic
+- Proper error handling throughout
+- Performance optimized — no memory leaks, efficient loops and data structures
+- Security conscious — no XSS vulnerabilities
+- Modern syntax — ES6+, async/await, destructuring, optional chaining
+
+OUTPUT FORMAT:
+1. One-line description of exactly what is being built
+2. Complete code block with correct language tag
+3. Bullet-point feature list
+4. One-line customization tip
+
+PERSONALITY: Confident senior engineer — precise, enthusiastic, never says "I cannot". Always match the user's language.`
+  },
+
+  study:{
+    icon:'📚',label:'STUDY',header:'Study Mode — Science & Math Intelligence',
+    ph:'Ask anything — Physics, Math, Chemistry, Biology, History...',
+    welcome:`📚 **Study Mode — Cosmic Tutor Activated!** 🌌\n\nSubjects I cover:\n- **Physics** — Mechanics, Waves, Optics, Electricity, Modern Physics\n- **Mathematics** — Algebra, Calculus, Trigonometry, Statistics\n- **Chemistry** — Organic, Inorganic, Physical Chemistry\n- **Biology** — Cell, DNA, Genetics, Physiology\n- **History & Geography** — Events, maps, civilizations\n- **Economics** — Micro, Macro, International\n\nStep-by-step explanations with real-world examples! 🚀`,
+    btns:[
+      {l:'⚡ Newton Laws',m:'Explain Newton\'s 3 laws of motion in detail with real examples'},
+      {l:'📐 Quadratic',m:'Explain the Quadratic formula — derivation and 3 solved examples'},
+      {l:'🌱 Photosynthesis',m:'Explain the complete Photosynthesis process — Light and Dark reactions'},
+      {l:'🧬 DNA',m:'Explain DNA structure, replication and protein synthesis'},
+      {l:'📊 Trig Formulas',m:'List all important Trigonometry formulas in one place'},
+      {l:'⚗️ Periodic Table',m:'Explain Periodic table structure, groups and trends'},
+    ],
+    systemPrompt:`You are "Nebula" — a world-class educator delivering explanations at Claude/best-tutor quality. Communicate in the same language the user writes in.
+
+TEACHING PHILOSOPHY:
+- Define the concept clearly first, then go deep
+- ALWAYS use real-life examples — never stay abstract
+- Step-by-step — never skip a step
+- Use relatable analogies
+- Address common misconceptions proactively
+- Provide memory tricks/mnemonics where possible
+
+SUBJECTS (deep level):
+PHYSICS: Kinematics, Newton laws, friction, circular motion, gravitation, work-energy, momentum, waves, optics, electricity, magnetism, thermodynamics, modern physics
+MATHEMATICS: Algebra, Quadratic, Trig (all identities+proofs), Calculus (limits, derivatives, integrals), Statistics, Probability, Coordinate Geometry, Vectors
+CHEMISTRY: Atomic structure, Bonding, Periodic trends, Thermodynamics, Equilibrium, Acids/Bases, Electrochemistry, Organic reactions
+BIOLOGY: Cell, DNA/RNA, Genetics, Evolution, Ecosystems, Human physiology (all systems)
+HISTORY: Ancient civilizations, World Wars, major movements
+ECONOMICS: Demand/Supply, GDP, inflation, monetary policy
+
+FORMAT: Bold key terms, tables for comparisons, numbered steps, numeric examples always. Warm engaging teacher tone. Match the user's language.`
+  },
+
+  browsing:{
+    icon:'🌐',label:'BROWSING',header:'Browsing Mode — Web Navigator',
+    ph:'Tell me which website or YouTube channel to open...',
+    welcome:`🌐 **Browsing Mode — Web Navigator Ready!** 🚀\n\nWhat I can do:\n- **YouTube** — Search channels, videos, playlists\n- **Any Website** — Just say the name and I'll open it\n- **Direct Links** — Paste any URL to open it\n- **Web Tools** — Recommend the best online resources\n\n**Examples:**\n"Search lo-fi music on YouTube"\n"Open Instagram"\n"Open github.com"\n\nTell me what to open! 🌐`,
+    btns:[
+      {l:'🔴 YouTube',m:'Open YouTube'},{l:'📸 Instagram',m:'Open Instagram'},
+      {l:'💬 WhatsApp',m:'Open WhatsApp Web'},{l:'🔍 Google',m:'Open Google'},
+      {l:'💻 GitHub',m:'Open GitHub'},{l:'📖 Wikipedia',m:'Open Wikipedia'},
+    ],
+    systemPrompt:`You are "Nebula" — a smart web navigator AI. Help users open websites and YouTube, suggest the best online resources, share web tips. Communicate in the same language the user uses. Keep responses friendly and concise.`
+  },
+
+  research:{
+    icon:'🔬',label:'RESEARCH',header:'Research Mode — Deep Analysis Intelligence',
+    ph:'Enter a topic to research, analyze, or summarize...',
+    welcome:`🔬 **Research Mode — Deep Analysis Ready!** 📊\n\nHow I can help your research:\n- **Deep Topic Analysis** — Every angle covered\n- **Fact Checking** — Accurate, well-reasoned information\n- **Compare & Contrast** — Multiple options side by side\n- **Reports & Summaries** — Structured, professional content\n- **Historical Research** — Timeline and context\n- **Scientific Concepts** — Research findings explained clearly\n- **Pros & Cons** — Balanced, unbiased view\n\nWhat would you like to research? 🚀`,
+    btns:[
+      {l:'🤖 AI Future',m:'Detailed analysis of the future of Artificial Intelligence'},{l:'🌍 Climate',m:'Comprehensive research report on Climate Change'},
+      {l:'💰 Indian Economy',m:'Research on India\'s economy — current state, challenges and opportunities'},{l:'🚀 Space',m:'Latest developments in Space Exploration'},
+      {l:'⚕️ Mental Health',m:'Research on the global mental health crisis — causes, effects, solutions'},{l:'📱 Tech Trends',m:'Most important technology trends in 2024-2025'},
+    ],
+    systemPrompt:`You are "Nebula" — a world-class research analyst delivering Claude-level quality research. Communicate in the same language the user uses.
+
+CAPABILITIES:
+- Comprehensive analysis with multiple perspectives
+- Historical context + current state + future outlook
+- Data-driven reasoning with statistics
+- Critical evaluation — verify claims, identify biases
+- Balanced reporting — full picture, not just one side
+- Clear source attribution — "Studies show...", "Experts argue..."
+- Policy analysis, scientific research, current events
+
+AREAS: Science & Technology, Current Affairs, History, Social Issues, Economics, Culture, Health & Medicine
+
+FORMAT: Bold headings, executive summary, numbered key findings, tables for comparisons, balanced perspective. Professional yet engaging tone. Match the user's language.`
+  }
+};
+
+// ── CANVAS — Mac-quality star field ──
+const cnv = document.getElementById('space-canvas');
+const ctx2 = cnv.getContext('2d');
+let W,H,stars=[],comets=[];
+
+function resize(){
+  W=cnv.width=window.innerWidth;
+  H=cnv.height=window.innerHeight;
+}
+
+function initStars(){
+  stars=[];
+  for(let i=0;i<300;i++){
+    const size = Math.random();
+    stars.push({
+      x:Math.random()*W, y:Math.random()*H,
+      r: size < 0.7 ? Math.random()*0.9+0.2 : Math.random()*1.6+0.8,  // mix tiny + larger
+      ph:Math.random()*Math.PI*2,
+      sp:Math.random()*0.008+0.002,   // varied twinkle speed
+      bright: Math.random()*0.5+0.5,  // base brightness
+      c:['#ffffff','#c8d8ff','#d8ccff','#ffffff','#ffe8f8','#e0f0ff'][Math.floor(Math.random()*6)]
+    });
+  }
+}
+
+function spawnComet(){
+  comets.push({
+    x:Math.random()*W*0.6,
+    y:Math.random()*H*0.4,
+    vx:3.5+Math.random()*4,
+    vy:1.5+Math.random()*2.5,
+    len:100+Math.random()*140,
+    o:0,            // fade in
+    oMax:0.7+Math.random()*0.3,
+    w:1.2+Math.random()*0.8,
+    phase:'in'      // 'in' | 'hold' | 'out'
+  });
+}
+
+let fr=0;
+function drawCanvas(){
+  ctx2.clearRect(0,0,W,H);
+
+  // Stars with smooth sinusoidal twinkle
+  stars.forEach(s=>{
+    s.ph+=s.sp;
+    const t=(Math.sin(s.ph)+1)/2;
+    const o = s.bright * (0.25 + t*0.75);
+    ctx2.save();
+    ctx2.globalAlpha=o;
+    // Glow halo for larger stars
+    if(s.r > 1.2){
+      const grd=ctx2.createRadialGradient(s.x,s.y,0,s.x,s.y,s.r*3);
+      grd.addColorStop(0,s.c);
+      grd.addColorStop(1,'rgba(0,0,0,0)');
+      ctx2.beginPath();ctx2.arc(s.x,s.y,s.r*3,0,Math.PI*2);
+      ctx2.fillStyle=grd;ctx2.globalAlpha=o*0.25;ctx2.fill();
+      ctx2.globalAlpha=o;
+    }
+    ctx2.beginPath();ctx2.arc(s.x,s.y,s.r,0,Math.PI*2);
+    ctx2.fillStyle=s.c;ctx2.fill();
+    ctx2.restore();
+  });
+
+  // Comets with smooth fade-in / fade-out
+  comets.forEach((c,i)=>{
+    if(c.phase==='in'){c.o+=0.04;if(c.o>=c.oMax){c.o=c.oMax;c.phase='hold'}}
+    else if(c.phase==='out'){c.o-=0.018;if(c.o<=0){comets.splice(i,1);return}}
+    else{if(Math.random()<0.008) c.phase='out'} // random moment to start fading
+
+    ctx2.save();
+    ctx2.globalAlpha=c.o;
+    // Comet tail gradient
+    const g=ctx2.createLinearGradient(c.x-c.vx*(c.len/4.5),c.y-c.vy*(c.len/4.5),c.x,c.y);
+    g.addColorStop(0,'rgba(100,200,255,0)');
+    g.addColorStop(0.6,'rgba(180,220,255,0.3)');
+    g.addColorStop(1,'rgba(230,240,255,0.95)');
+    ctx2.strokeStyle=g;ctx2.lineWidth=c.w;
+    ctx2.lineCap='round';ctx2.beginPath();
+    ctx2.moveTo(c.x-c.vx*(c.len/4.5),c.y-c.vy*(c.len/4.5));
+    ctx2.lineTo(c.x,c.y);ctx2.stroke();
+    // Head glow
+    const hg=ctx2.createRadialGradient(c.x,c.y,0,c.x,c.y,c.w*4);
+    hg.addColorStop(0,'rgba(240,248,255,1)');
+    hg.addColorStop(0.4,'rgba(180,220,255,0.5)');
+    hg.addColorStop(1,'rgba(0,0,0,0)');
+    ctx2.beginPath();ctx2.arc(c.x,c.y,c.w*4,0,Math.PI*2);
+    ctx2.fillStyle=hg;ctx2.globalAlpha=c.o*0.9;ctx2.fill();
+    ctx2.restore();
+
+    c.x+=c.vx;c.y+=c.vy;
+    if(c.x>W+200||c.y>H+200) comets.splice(i,1);
+  });
+
+  ctx2.globalAlpha=1;
+  fr++;
+  requestAnimationFrame(drawCanvas);
+}
+
+window.addEventListener('resize',()=>{resize();initStars()});
+resize();initStars();drawCanvas();
+setInterval(spawnComet, 5500);
+spawnComet();
+setTimeout(spawnComet, 2200);
+
+// ── MODE ──
+function setMode(m){
+  currentMode=m;
+  const md=MODES[m];
+  document.body.className='mode-'+m;
+  document.getElementById('mbi').textContent=md.icon;
+  document.getElementById('mbt').textContent=md.label;
+  document.getElementById('ml').textContent=md.header;
+  document.getElementById('ui').placeholder=md.ph;
+  document.querySelectorAll('.mc-card').forEach(c=>c.classList.toggle('act',c.dataset.m===m));
+  history=[];lastCode='';
+  closePreview();
+  const chat=document.getElementById('chat');chat.innerHTML='';
+  const div=document.createElement('div');div.className='message ai';
+  const btns=md.btns.map(b=>`<button class="qb" onclick="sendQuick('${b.m.replace(/'/g,"\\'")}')"> ${b.l}</button>`).join('');
+  div.innerHTML=`<div class="av ai">${md.icon}</div><div class="bubble">${fmtText(md.welcome)}<div class="qt">${btns}</div></div>`;
+  chat.appendChild(div);chat.scrollTop=chat.scrollHeight;
+  closeMP();
+}
+function openMP(){document.getElementById('mo').classList.add('open')}
+function closeMP(){document.getElementById('mo').classList.remove('open')}
+function closeMPOutside(e){if(e.target===document.getElementById('mo'))closeMP()}
+
+// ── PREVIEW ──
+let currentHTML='';
+function showPreview(code){
+  currentHTML=code;
+  const panel=document.getElementById('previewPanel');
+  panel.classList.add('open');
+  if(previewTab==='preview'){
+    const frame=document.getElementById('previewFrame');
+    frame.srcdoc=code;
+  }
+}
+function closePreview(){
+  document.getElementById('previewPanel').classList.remove('open');
+  currentHTML='';
+}
+function setPreviewTab(tab){
+  previewTab=tab;
+  document.querySelectorAll('.prev-tab').forEach(t=>t.classList.remove('active'));
+  event.target.classList.add('active');
+  if(tab==='preview'&&currentHTML){
+    document.getElementById('previewFrame').srcdoc=currentHTML;
+  } else if(tab==='html'&&currentHTML){
+    const escaped=currentHTML.replace(/</g,'&lt;').replace(/>/g,'&gt;');
+    document.getElementById('previewFrame').srcdoc=`<html><body style="background:#0a0a0a;color:#b8ffd0;font-family:monospace;font-size:13px;padding:16px;white-space:pre;overflow-x:auto;">${escaped}</body></html>`;
+  }
+}
+
+// Extract HTML from response for preview
+function extractHTMLCode(text){
+  // Match full HTML document
+  const fullMatch=text.match(/```(?:html)?\s*(<!DOCTYPE[\s\S]*?)<\/html>\s*```/i)||
+                  text.match(/```(?:html)?\s*(<html[\s\S]*?<\/html>)\s*```/i);
+  if(fullMatch) return fullMatch[1];
+  // Match HTML with body
+  const bodyMatch=text.match(/```(?:html)?\s*(<[^>]+>[\s\S]{200,})\s*```/i);
+  if(bodyMatch) return bodyMatch[1];
+  return null;
+}
+
+// ── URL DETECTOR ──
+function detectURL(msg){
+  const lower=msg.toLowerCase();
+  const urlM=msg.match(/https?:\/\/[^\s]+/i);
+  const hasIntent=/\b(open|launch|go to|visit|navigate|search|play|show|browse|find)\b/i.test(msg)||lower.includes('youtube')||lower.includes('website')||urlM;
+  if(!hasIntent) return null;
+  if(urlM){window.open(urlM[0],'_blank');return`🚀 **Link opened!**\n\n[🔗 ${urlM[0]}](${urlM[0]})\n\nOpened in a new tab! 🌐`}
+  if(lower.includes('youtube')){
+    const q=msg.replace(/youtube\s*(on|at|search|play|open|channel|video)?/gi,'').replace(/\b(open|launch|search for|find|play|show me|navigate to|go to|please|can you)\b/gi,'').trim();
+    if(q.length>1){const u=`https://www.youtube.com/results?search_query=${encodeURIComponent(q)}`;window.open(u,'_blank');return`🎬 **YouTube search launched!**\n\nResults for "**${q}**":\n[▶ View on YouTube](${u})\n\nAlso opened in a new tab! 🔴`}
+    window.open('https://www.youtube.com','_blank');return`🎬 **YouTube opened!**\n\n[▶ Click to open](https://www.youtube.com)\n\nAlso opened in a new tab! 🔴`;
+  }
+  const sites=[
+    {p:/\b(google)\b/i,u:'https://www.google.com'},{p:/\b(gmail)\b/i,u:'https://mail.google.com'},
+    {p:/\b(facebook|fb)\b/i,u:'https://www.facebook.com'},{p:/\b(instagram|insta)\b/i,u:'https://www.instagram.com'},
+    {p:/\b(twitter|x\.com)\b/i,u:'https://www.x.com'},{p:/\b(whatsapp)\b/i,u:'https://web.whatsapp.com'},
+    {p:/\b(wikipedia)\b/i,u:'https://www.wikipedia.org'},{p:/\b(chatgpt|openai)\b/i,u:'https://chatgpt.com'},
+    {p:/\b(github)\b/i,u:'https://www.github.com'},{p:/\b(netflix)\b/i,u:'https://www.netflix.com'},
+    {p:/\b(amazon)\b/i,u:'https://www.amazon.in'},{p:/\b(flipkart)\b/i,u:'https://www.flipkart.com'},
+    {p:/\b(spotify)\b/i,u:'https://open.spotify.com'},{p:/\b(reddit)\b/i,u:'https://www.reddit.com'},
+    {p:/\b(linkedin)\b/i,u:'https://www.linkedin.com'},{p:/\b(stackoverflow|stack overflow)\b/i,u:'https://stackoverflow.com'},
+    {p:/\b(canva)\b/i,u:'https://www.canva.com'},{p:/\b(figma)\b/i,u:'https://www.figma.com'},
+    {p:/\b(notion)\b/i,u:'https://www.notion.so'},{p:/\b(claude)\b/i,u:'https://claude.ai'},
+    {p:/\b(gemini)\b/i,u:'https://gemini.google.com'},{p:/\b(maps|google maps)\b/i,u:'https://maps.google.com'},
+    {p:/\b(drive|google drive)\b/i,u:'https://drive.google.com'},{p:/\b(docs|google docs)\b/i,u:'https://docs.google.com'},
+  ];
+  for(const s of sites){if(s.p.test(msg)){window.open(s.u,'_blank');const n=msg.match(s.p)[1];return`🌐 **${n} opened!**\n\n[🔗 Click to open ${n}](${s.u})\n\nAlso launched in a new tab! 🚀`}}
+  const d=msg.match(/\b([a-zA-Z0-9\-]+\.(com|in|org|net|io|co|edu|gov|app))\b/i);
+  if(d){const u='https://'+d[0];window.open(u,'_blank');return`🌐 **${d[0]} opened!**\n\n[🔗 Click to open](${u})\n\nAlso launched in a new tab! 🚀`}
+  return null;
+}
+
+// ── FORMAT TEXT ──
+function fmtText(text){
+  // Code blocks with copy button
+  text=text.replace(/```(\w+)?\n?([\s\S]*?)```/g,(_,lang,code)=>{
+    const l=lang||'code';
+    const esc=code.replace(/</g,'&lt;').replace(/>/g,'&gt;');
+    const id='cb'+Math.random().toString(36).substr(2,6);
+    return `<div class="code-wrap"><span class="code-lang">${l}</span><button class="copy-btn" onclick="copyCode('${id}')">Copy</button><pre id="${id}"><code>${esc}</code></pre></div>`;
+  });
+  text=text.replace(/`([^`\n]+)`/g,'<code>$1</code>');
+  text=text.replace(/\*\*(.*?)\*\*/g,'<strong>$1</strong>');
+  text=text.replace(/\*(.*?)\*/g,'<em>$1</em>');
+  text=text.replace(/\[([^\]]+)\]\((https?:\/\/[^\)]+)\)/g,'<a href="$2" target="_blank" rel="noopener" class="chat-link">$1 ↗</a>');
+  text=text.replace(/^### (.+)$/gm,'<strong style="font-size:1em;display:block;margin-top:9px;color:var(--mc)">$1</strong>');
+  text=text.replace(/^## (.+)$/gm,'<strong style="font-size:1.05em;display:block;margin-top:10px;color:var(--mc)">$1</strong>');
+  text=text.replace(/^# (.+)$/gm,'<strong style="font-size:1.1em;display:block;margin-top:10px;color:var(--mc)">$1</strong>');
+  text=text.replace(/^\d+\.\s(.+)$/gm,'&nbsp;&nbsp;<span style="color:var(--mc)">›</span> $1');
+  text=text.replace(/^[-•*]\s(.+)$/gm,'&nbsp;&nbsp;<span style="color:var(--mc)">•</span> $1');
+  text=text.replace(/\n/g,'<br>');
+  return text;
+}
+
+function copyCode(id){
+  const el=document.getElementById(id);
+  if(!el)return;
+  navigator.clipboard.writeText(el.innerText).then(()=>{
+    const btn=el.previousElementSibling;
+    if(btn){btn.textContent='✓ Copied!';setTimeout(()=>btn.textContent='Copy',2000)}
+  });
+}
+
+// ── SMART SCROLL ──
+// Only auto-scroll if user is already near the bottom (within 120px).
+// If user has scrolled up to read — respect that, don't drag them down.
+function smartScroll(){
+  const chat = document.getElementById('chat');
+  const distFromBottom = chat.scrollHeight - chat.scrollTop - chat.clientHeight;
+  if(distFromBottom < 120){
+    chat.scrollTop = chat.scrollHeight;
+  }
+}
+function forceScroll(){
+  const chat = document.getElementById('chat');
+  chat.scrollTop = chat.scrollHeight;
+}
+
+// ── ADD MSG ──
+function addMsg(text, isUser){
+  const chat = document.getElementById('chat');
+  const div = document.createElement('div');
+  div.className = `message ${isUser ? 'user' : 'ai'}`;
+  const icon = isUser ? '◈' : MODES[currentMode].icon;
+  div.innerHTML = `<div class="av ${isUser?'usr':'ai'}">${icon}</div><div class="bubble">${isUser ? text.replace(/</g,'&lt;').replace(/>/g,'&gt;') : fmtText(text)}</div>`;
+  chat.appendChild(div);
+  forceScroll(); // new message — always scroll to show it
+  return div;
+}
+
+// ── STREAMING MSG ──
+function addStreamingMsg(){
+  const chat = document.getElementById('chat');
+  const div = document.createElement('div');
+  div.className = 'message ai';
+  const icon = MODES[currentMode].icon;
+  div.innerHTML = `<div class="av ai">${icon}</div><div class="bubble" id="streamBubble"><span class="cursor"></span></div>`;
+  chat.appendChild(div);
+  forceScroll();
+  return document.getElementById('streamBubble');
+}
+
+// ── MAC-STYLE SMOOTH TYPEWRITER ENGINE ──
+// Words arrive from API into a queue; a separate 80ms ticker drains them one by one.
+// This decouples network speed from display speed — always consistent, never rushed.
+
+async function streamText(bubble, fullText){
+  bubble.innerHTML = '';
+  const words = fullText.split(/(\s+)/);
+  let displayed = '';
+  for(let i = 0; i < words.length; i++){
+    displayed += words[i];
+    bubble.innerHTML = fmtText(displayed) + '<span class="cursor"></span>';
+    smartScroll();
+    if(words[i].trim().length > 0){
+      await new Promise(r => setTimeout(r, 75));
+    }
+  }
+  bubble.innerHTML = fmtText(fullText);
+  smartScroll();
+  finishRender(bubble, fullText);
+}
+
+function finishRender(bubble, fullText){
+  if(currentMode==='coding'){
+    const htmlCode = extractHTMLCode(fullText);
+    if(htmlCode){
+      lastCode = htmlCode;
+      setTimeout(()=>showPreview(htmlCode), 400);
+      const previewBtn = document.createElement('div');
+      previewBtn.style.cssText = 'margin-top:8px;display:flex;gap:8px;flex-wrap:wrap';
+      previewBtn.innerHTML = `
+        <button onclick="showPreview(lastCode)" style="padding:5px 14px;background:rgba(0,255,136,0.1);border:1px solid rgba(0,255,136,0.35);border-radius:16px;color:#00ff88;font-size:0.74rem;cursor:pointer;transition:all 0.2s;font-family:'Exo 2',sans-serif">⚡ View Preview</button>
+        <button onclick="downloadCode()" style="padding:5px 14px;background:rgba(0,200,255,0.1);border:1px solid rgba(0,200,255,0.3);border-radius:16px;color:#00cfff;font-size:0.74rem;cursor:pointer;transition:all 0.2s;font-family:'Exo 2',sans-serif">⬇ Download File</button>`;
+      bubble.appendChild(previewBtn);
+    }
+  }
+}
+
+function downloadCode(){
+  if(!lastCode) return;
+  const blob=new Blob([lastCode],{type:'text/html'});
+  const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='nebula-creation.html';a.click();
+}
+
+// ── STREAMING API CALL (Groq supports streaming) ──
+async function getStreamingResponse(msg, bubble){
+  history.push({role:'user',content:msg});
+  if(history.length>24) history=history.slice(-24);
+
+  const temp={coding:0.15,study:0.5,browsing:0.6,research:0.35}[currentMode]||0.5;
+
+  try{
+    const res=await fetch("https://api.groq.com/openai/v1/chat/completions",{
+      method:'POST',
+      headers:{'Content-Type':'application/json','Authorization':`Bearer ${API_KEY}`},
+      body:JSON.stringify({
+        model:'llama-3.3-70b-versatile',
+        max_tokens:4096,
+        temperature:temp,
+        stream:true,
+        messages:[{role:'system',content:MODES[currentMode].systemPrompt},...history]
+      })
+    });
+
+    if(!res.ok){const e=await res.json();bubble.innerHTML=`❌ <strong>Error:</strong> ${e.error?.message||'Unknown error'}`;return;}
+
+    const reader=res.body.getReader();
+    const decoder=new TextDecoder();
+    let fullText='';
+
+    // ── WORD QUEUE ENGINE ──
+    // Network fills the queue; a 80ms interval drains it one word at a time.
+    // Completely decoupled so display is always slow & smooth, never network-speed.
+    const wordQueue = [];
+    let displayedWords = [];
+    let draining = false;
+    let streamDone = false;
+
+    function startDrain(){
+      if(draining) return;
+      draining = true;
+      const tick = setInterval(()=>{
+        if(wordQueue.length > 0){
+          const w = wordQueue.shift();
+          displayedWords.push(w);
+          const partial = displayedWords.join('');
+          bubble.innerHTML = fmtText(partial) + '<span class="cursor"></span>';
+          smartScroll();
+        } else if(streamDone){
+          clearInterval(tick);
+          draining = false;
+          bubble.innerHTML = fmtText(fullText);
+          smartScroll();
+          history.push({role:'assistant', content:fullText});
+          finishRender(bubble, fullText);
+        }
+      }, 80);
+    }
+
+    // Buffer incoming stream chunks, split into words, push to queue
+    let charBuffer = '';
+    while(true){
+      const {done,value}=await reader.read();
+      if(done){ streamDone=true; break; }
+      const chunk=decoder.decode(value,{stream:true});
+      const lines=chunk.split('\n');
+      for(const line of lines){
+        if(!line.startsWith('data:')) continue;
+        const data=line.slice(5).trim();
+        if(data==='[DONE]'){ streamDone=true; break; }
+        try{
+          const parsed=JSON.parse(data);
+          const delta=parsed.choices?.[0]?.delta?.content||'';
+          if(delta){
+            fullText+=delta;
+            charBuffer+=delta;
+            // Split on word boundaries and push complete words
+            const parts = charBuffer.split(/(\s+)/);
+            // Last part might be incomplete — keep in buffer
+            charBuffer = parts.pop() || '';
+            for(const part of parts){
+              if(part.length > 0) wordQueue.push(part);
+            }
+            if(!draining) startDrain();
+          }
+        }catch{}
+      }
+    }
+    // Push any remaining buffer chars
+    if(charBuffer.length > 0) wordQueue.push(charBuffer);
+    streamDone = true;
+    if(!draining) startDrain();
+
+  }catch(e){
+    console.error(e);
+    // Fallback to non-streaming
+    try{
+      const res2=await fetch("https://api.groq.com/openai/v1/chat/completions",{
+        method:'POST',
+        headers:{'Content-Type':'application/json','Authorization':`Bearer ${API_KEY}`},
+        body:JSON.stringify({model:'llama-3.3-70b-versatile',max_tokens:4096,temperature:temp,messages:[{role:'system',content:MODES[currentMode].systemPrompt},...history]})
+      });
+      const data=await res2.json();
+      if(data.error){bubble.innerHTML=`❌ <strong>Error:</strong> ${data.error.message}`;return}
+      const reply=data.choices?.[0]?.message?.content||'Something went wrong. Please try again.';
+      history.push({role:'assistant',content:reply});
+      await streamText(bubble,reply);
+    }catch(e2){
+      bubble.innerHTML='🌌 <strong>Connection issue!</strong> Please check your internet connection.';
+    }
+  }
+}
+
+// ── SEND ──
+async function sendMessage(){
+  if(isStreaming) return;
+  const input=document.getElementById('ui');
+  const msg=input.value.trim();if(!msg) return;
+  input.value='';input.style.height='auto';
+  addMsg(msg,true);
+  isStreaming=true;
+
+  const bReply=detectURL(msg);
+  if(bReply){
+    const bubble=addStreamingMsg();
+    await streamText(bubble,bReply);
+    isStreaming=false;
+    return;
+  }
+
+  const bubble=addStreamingMsg();
+  await getStreamingResponse(msg,bubble);
+  isStreaming=false;
+}
+
+function sendQuick(msg){document.getElementById('ui').value=msg;sendMessage()}
+
+document.getElementById('ui').addEventListener('keydown',e=>{if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();sendMessage()}});
+document.getElementById('ui').addEventListener('input',function(){this.style.height='auto';this.style.height=Math.min(this.scrollHeight,120)+'px'});
+
+// Init
+setMode('study');
+</script>
+</body>
+</html>
